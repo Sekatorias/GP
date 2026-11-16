@@ -1,0 +1,17 @@
+# Пример systemd unit. Измените User и абсолютные пути.
+[Unit]
+Description=GP Discord Name Rotator
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/opt/gp
+EnvironmentFile=/opt/gp/.env
+ExecStart=/opt/gp/.venv/bin/python /opt/gp/bot.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
