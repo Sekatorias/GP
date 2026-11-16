@@ -1,0 +1,33 @@
+name: Ежедневное название ГП
+
+on:
+  schedule:
+    # Ежедневно в 09:17 UTC = 12:17 по московскому времени.
+    - cron: '17 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rename:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+      DISCORD_GUILD_ID: ${{ secrets.DISCORD_GUILD_ID }}
+      TIMEZONE: Europe/Moscow
+      # Ручной запуск создаёт другой вариант, даже в тот же день.
+      REROLL_SEED: ${{ github.event_name == 'workflow_dispatch' && github.run_id || '' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Rename Discord server
+        run: python main.py
